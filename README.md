@@ -71,8 +71,40 @@ El sistema detectará automáticamente eventos de violencia y los mostrará en l
 # Contribuciones
 Las contribuciones son bienvenidas. Si tienes alguna mejora o nueva funcionalidad que te gustaría agregar, por favor, realiza un fork de este repositorio, crea una nueva rama para tus cambios, y envía un pull request para su revisión.
 
-Licencia
-Este proyecto está bajo la Licencia MIT. Para más detalles, consulta el archivo LICENSE.
+# Colaboradores
+Cambiarse de rama, por ejemplo la rama develop
+
+* git checkout develop
+
+Hacer cambios
+
+* echo "insertar aqui un comentario" > inserte archvio
+
+Agregar los cambios hechos
+
+Para agregar todo los cambios:
+
+* git add .
+
+Para agregar un cambio de un archivo en especifico:
+
+* git add nombre del archivo
+
+Comentar los cambios ya hechos anteriormente
+
+* git commit -m "inserte el comentario para los cambios"
+
+Subir los cambios 
+
+* git push origin rama a asignar 
+
+Para unir ramas o merge 
+
+* git pull origin rama destinataria
+
+# Licencia
+
+Este proyecto está bajo la Licencia MIT. Para más detalles, consulta el archivo LICENSE .
 
 
 
