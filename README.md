@@ -26,6 +26,7 @@ AWS CLI configurado
 OpenCV y otras bibliotecas de detección de violencia
 Git
 Pasos para la Instalación
+
 1.Clona el repositorio:
 git clone https://github.com/tu_usuario/tu_proyecto.git
 
