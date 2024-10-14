@@ -57,6 +57,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 5.Configura la base de datos en AWS y realiza las migraciones:
+python manage.py makemigrations
 
 python manage.py migrate
 
