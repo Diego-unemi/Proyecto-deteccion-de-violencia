@@ -11,30 +11,30 @@ Interfaz Web: Proporciona una interfaz web para la visualización en tiempo real
 Optimización y Escalabilidad: El sistema está optimizado para manejar un alto volumen de datos y tráfico, asegurando un rendimiento eficiente en entornos de producción.
 
 ## Tecnologías Utilizadas
-*Backend: Django
+* Backend: Django
 
-*Base de Datos: AWS RDS (Relational Database Service)
+* Base de Datos: AWS RDS (Relational Database Service)
 
-*Frontend: HTML, CSS, JavaScript (integrado con Django)
+* Frontend: HTML, CSS, JavaScript (integrado con Django)
 
-*Visión por Computadora: OpenCV u otras bibliotecas de detección de violencia
+* Visión por Computadora: OpenCV u otras bibliotecas de detección de violencia
 
-*Despliegue: AWS EC2, AWS S3, AWS RDS
+* Despliegue: AWS EC2, AWS S3, AWS RDS
 
-*Control de Versiones: Git, GitHub
+* Control de Versiones: Git, GitHub
 
 
 ## Requisitos Previos
 
-*Python 3.x
+* Python 3.x
 
-*Django 3.x o superior
+* Django 3.x o superior
 
-*AWS CLI configurado
+* AWS CLI configurado
 
-*OpenCV y otras bibliotecas de detección de violencia
+* OpenCV y otras bibliotecas de detección de violencia
 
-*Git
+* Git
 
 ## Pasos para la Instalación
 
