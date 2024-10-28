@@ -49,59 +49,66 @@ cd Proyecto-deteccion-de-violencia
 ### 3.Crea un entorno virtual e instálalo:
 ```
 python -m venv venv
+```
+```
 venv\Scripts\activate
 ```
-4.Instala las dependencias:
+### 4.Instala las dependencias:
+```
 pip install -r requirements.txt
+```
 
-5.Configura la base de datos en AWS y realiza las migraciones:
+### 5.Configura la base de datos en AWS y realiza las migraciones:
+```
 python manage.py makemigrations
-
+```
+```
 python manage.py migrate
-
-6.Ejecuta el servidor de desarrollo:
-
+```
+### 6.Ejecuta el servidor de desarrollo:
+```
 python manage.py runserver
-
-# Uso
+```
+## Uso
 Inicia el servidor localmente o despliega la aplicación en AWS.
 Accede a la interfaz web en tu navegador para monitorear los videos en tiempo real.
 El sistema detectará automáticamente eventos de violencia y los mostrará en la interfaz.
-# Contribuciones
+## Contribuciones
 Las contribuciones son bienvenidas. Si tienes alguna mejora o nueva funcionalidad que te gustaría agregar, por favor, realiza un fork de este repositorio, crea una nueva rama para tus cambios, y envía un pull request para su revisión.
 
-# Colaboradores
+## Colaboradores
 Cambiarse de rama, por ejemplo la rama develop
-
-* git checkout develop
-
+```
+git checkout develop
+```
 Hacer cambios
-
-* echo "insertar aqui un comentario" > inserte archvio
-
+```
+echo "insertar aqui un comentario" > inserte archvio
+```
 Agregar los cambios hechos
 
 Para agregar todo los cambios:
-
-* git add .
+```
+ git add .
+```
 
 Para agregar un cambio de un archivo en especifico:
-
-* git add nombre del archivo
-
+```
+git add nombre del archivo
+```
 Comentar los cambios ya hechos anteriormente
-
-* git commit -m "inserte el comentario para los cambios"
-
+```
+git commit -m "inserte el comentario para los cambios"
+```
 Subir los cambios 
-
-* git push origin rama a asignar 
-
+```
+git push origin rama a asignar 
+```
 Para unir ramas o merge 
-
-* git pull origin rama destinataria
-
-# Licencia
+```
+git pull origin rama destinataria
+```
+## Licencia
 
 Este proyecto está bajo la Licencia MIT. Para más detalles, consulta el archivo LICENSE .
 
