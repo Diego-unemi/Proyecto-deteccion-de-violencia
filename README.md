@@ -11,61 +11,61 @@ Interfaz Web: Proporciona una interfaz web para la visualización en tiempo real
 Optimización y Escalabilidad: El sistema está optimizado para manejar un alto volumen de datos y tráfico, asegurando un rendimiento eficiente en entornos de producción.
 
 ## Tecnologías Utilizadas
-* Backend: Django
+- Backend: Django
 
-* Base de Datos: AWS RDS (Relational Database Service)
+- Base de Datos: AWS RDS (Relational Database Service)
 
-* Frontend: HTML, CSS, JavaScript (integrado con Django)
+- Frontend: HTML, CSS, JavaScript (integrado con Django)
 
-* Visión por Computadora: OpenCV u otras bibliotecas de detección de violencia
+- Visión por Computadora: OpenCV u otras bibliotecas de detección de violencia
 
-* Despliegue: AWS EC2, AWS S3, AWS RDS
+- Despliegue: AWS EC2, AWS S3, AWS RDS
 
-* Control de Versiones: Git, GitHub
+- Control de Versiones: Git, GitHub
 
 
 ## Requisitos Previos
 
-* Python 3.x
+- Python 3.x
 
-* Django 3.x o superior
+- Django 3.x o superior
 
-* AWS CLI configurado
+- AWS CLI configurado
 
-* OpenCV y otras bibliotecas de detección de violencia
+- OpenCV y otras bibliotecas de detección de violencia
 
-* Git
+- Git
 
 ## Pasos para la Instalación
 
-### 1.Clona el repositorio:
+### 1. Clona el repositorio:
 ```
 git clone https://github.com/Diego-unemi/Proyecto-deteccion-de-violencia.git
 ```
-### 2.Navega al directorio del proyecto:
+### 2. Navega al directorio del proyecto:
 ```
 cd Proyecto-deteccion-de-violencia
 ```
-### 3.Crea un entorno virtual e instálalo:
+### 3. Crea un entorno virtual e instálalo:
 ```
 python -m venv venv
 ```
 ```
 venv\Scripts\activate
 ```
-### 4.Instala las dependencias:
+### 4. Instala las dependencias:
 ```
 pip install -r requirements.txt
 ```
 
-### 5.Configura la base de datos en AWS y realiza las migraciones:
+### 5. Configura la base de datos en AWS y realiza las migraciones:
 ```
 python manage.py makemigrations
 ```
 ```
 python manage.py migrate
 ```
-### 6.Ejecuta el servidor de desarrollo:
+### 6. Ejecuta el servidor de desarrollo:
 ```
 python manage.py runserver
 ```
