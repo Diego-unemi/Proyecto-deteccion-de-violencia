@@ -11,30 +11,30 @@ Interfaz Web: Proporciona una interfaz web para la visualización en tiempo real
 Optimización y Escalabilidad: El sistema está optimizado para manejar un alto volumen de datos y tráfico, asegurando un rendimiento eficiente en entornos de producción.
 
 ## Tecnologías Utilizadas
-Backend: Django
+*Backend: Django
 
-Base de Datos: AWS RDS (Relational Database Service)
+*Base de Datos: AWS RDS (Relational Database Service)
 
-Frontend: HTML, CSS, JavaScript (integrado con Django)
+*Frontend: HTML, CSS, JavaScript (integrado con Django)
 
-Visión por Computadora: OpenCV u otras bibliotecas de detección de violencia
+*Visión por Computadora: OpenCV u otras bibliotecas de detección de violencia
 
-Despliegue: AWS EC2, AWS S3, AWS RDS
+*Despliegue: AWS EC2, AWS S3, AWS RDS
 
-Control de Versiones: Git, GitHub
+*Control de Versiones: Git, GitHub
 
 
 ## Requisitos Previos
 
-Python 3.x
+*Python 3.x
 
-Django 3.x o superior
+*Django 3.x o superior
 
-AWS CLI configurado
+*AWS CLI configurado
 
-OpenCV y otras bibliotecas de detección de violencia
+*OpenCV y otras bibliotecas de detección de violencia
 
-Git
+*Git
 
 ## Pasos para la Instalación
 
@@ -77,7 +77,7 @@ El sistema detectará automáticamente eventos de violencia y los mostrará en l
 Las contribuciones son bienvenidas. Si tienes alguna mejora o nueva funcionalidad que te gustaría agregar, por favor, realiza un fork de este repositorio, crea una nueva rama para tus cambios, y envía un pull request para su revisión.
 
 ## Colaboradores
-Cambiarse de rama, por ejemplo la rama develop
+Cambiarse de rama, por ejemplo la rama develop:
 ```
 git checkout develop
 ```
@@ -85,7 +85,7 @@ Hacer cambios
 ```
 echo "insertar aqui un comentario" > inserte archvio
 ```
-Agregar los cambios hechos
+*Agregar los cambios hechos
 
 Para agregar todo los cambios:
 ```
@@ -96,15 +96,15 @@ Para agregar un cambio de un archivo en especifico:
 ```
 git add nombre del archivo
 ```
-Comentar los cambios ya hechos anteriormente
+Comentar los cambios ya hechos anteriormente:
 ```
 git commit -m "inserte el comentario para los cambios"
 ```
-Subir los cambios 
+Subir los cambios:
 ```
 git push origin rama a asignar 
 ```
-Para unir ramas o merge 
+Para unir ramas o merge: 
 ```
 git pull origin rama destinataria
 ```
