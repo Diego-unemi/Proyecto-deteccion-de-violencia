@@ -85,7 +85,7 @@ Hacer cambios
 ```
 echo "insertar aqui un comentario" > inserte archvio
 ```
-- Agregar los cambios hechos
+Agregar los cambios hechos
 
 Para agregar todo los cambios:
 ```
