@@ -113,6 +113,3 @@ git pull origin rama destinataria
 Este proyecto está bajo la Licencia MIT. Para más detalles, consulta el archivo LICENSE .
 
 
-
-
-
