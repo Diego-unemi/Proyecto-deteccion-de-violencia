@@ -75,22 +75,20 @@ El sistema detectará automáticamente eventos de violencia y los mostrará en l
 ## Contribuciones
 Las contribuciones son bienvenidas. Si tienes alguna mejora o nueva funcionalidad que te gustaría agregar, por favor, realiza un fork de este repositorio, crea una nueva rama para tus cambios, y envía un pull request para su revisión.
 
-## Colaboradores
-Cambiarse de rama, por ejemplo la rama develop:
+## Uso de Git
+### Hacer cambios de tu rama local al repositorio
+Para conocer los commits que hay se usa:
+```
+git load
+```
+Cambiarse de rama, por ejemplo la rama develop, se debe poner el nombre de la rama a la cual se quiera cambiar:
 ```
 git checkout develop
 ```
-Hacer cambios
-```
-echo "insertar aqui un comentario" > inserte archvio
-```
-Agregar los cambios hechos
-
 Para agregar todo los cambios:
 ```
  git add .
 ```
-
 Para agregar un cambio de un archivo en especifico:
 ```
 git add nombre del archivo
@@ -103,9 +101,30 @@ Subir los cambios:
 ```
 git push origin rama a asignar 
 ```
-Para unir ramas o merge: 
+Para fusionar la rama remota o repositorio con la hecha en a rama local: 
 ```
 git pull origin rama destinataria
+```
+### Otros usos de git
+Para actualizar tu rama local, esto integra los cambios de la rama remota o repositorio a tu rama local, lo que hace es ordenar los commits de fechas diferentes:
+```
+git pull --rebase  origin rama destinataria
+```
+Para verificar si hay novedades o cambios en el repositorios y descargalos unicamente:
+```
+git fetch origin 
+```
+Para fusionar las novedades o cambios hechos con fetch con lo hecho en tu rama local se utiliza:
+```
+git merge origin rama destinataria
+```
+Para crear una rama se usa:
+```
+git checkout -b nombre de la rama
+```
+Para revisar todas las ramas se usa:
+```
+git branch --all
 ```
 ## Licencia
 
