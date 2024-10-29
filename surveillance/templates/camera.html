@@ -25,6 +25,8 @@
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-xl font-semibold mb-4 text-gray-700">Cargar Nuevo Video</h2>
             <form action="#" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
                 <div class="mb-4">
                     <label for="video-file" class="block text-gray-700 text-sm font-bold mb-2">Seleccionar archivo de video:</label>
                     <input type="file" id="video-file" name="video-file" accept="video/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
@@ -45,12 +47,14 @@
             </form>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8 justify-center " >
             <h2 class="text-xl font-semibold mb-4 text-gray-700">Transmisión de Video en Tiempo Real</h2>
             <div class="video-container mb-4">
-                <img src="{% url 'video_feed' %}" class="img-fluid" alt="Transmisión de Video">
+                <img src="{% url 'video_feed' %}" class="mx-auto rounded-lg shadow-lg" alt="Transmisión de Video">
             </div>
+            <div id="resultado-prediccion" class="text-center text-xl font-semibold text-gray-800"></div>
         </div>
+        
 
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-semibold mb-4 text-gray-700">Videos Importados Recientemente</h2>
