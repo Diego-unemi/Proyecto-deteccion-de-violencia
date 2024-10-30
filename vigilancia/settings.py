@@ -140,3 +140,9 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración del directorio de modelos
+MODEL_DIR = os.path.join(BASE_DIR, 'models')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+TFLITE_MODEL_PATH = os.path.join(BASE_DIR, 'models/modelo_cnn_lstm.tflite')

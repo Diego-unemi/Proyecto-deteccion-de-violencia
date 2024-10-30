@@ -1,73 +1,74 @@
-import cv2
-from django.http import StreamingHttpResponse, HttpResponse
-from django.views.decorators import gzip
+# import cv2
+# import numpy as np
+# import tensorflow as tf
+# from django.http import StreamingHttpResponse
 from django.shortcuts import render, redirect
-import joblib
-import numpy as np
-import threading
-from .forms import ContactForm
 from django.core.mail import send_mail
 from django.conf import settings
 
-# Carga del modelo y sustractor de fondo al nivel del módulo
-model = joblib.load('modelo_violencia.pkl')
-bg_subtractor = cv2.createBackgroundSubtractorMOG2()
+# from django.conf import settings
+# from collections import deque
+from .forms import ContactForm
+from .forms import VideoUploadForm
 
-class VideoCamera(object):
-    def __init__(self, model, bg_subtractor):
-        self.video = cv2.VideoCapture(0)
-        if not self.video.isOpened():
-            raise Exception("No se puede abrir la cámara")
-        self.model = model
-        self.bg_subtractor = bg_subtractor
-        self.frame_count = 0
-        self.lock = threading.Lock()
 
-    def __del__(self):
-        self.video.release()
+# # Cargar el modelo entrenado
+# modelo = tf.keras.models.load_model("modelo_cnn_lstm.h5")
 
-    def get_frame(self):
-        with self.lock:
-            ret, frame = self.video.read()
-            if not ret:
-                return None
+# # Configuración
+# IMG_SIZE = 64
+# SEQ_LENGTH = 15  # Mantener la secuencia en 15 frames, ya que el modelo fue entrenado así
+# UMBRAL = 0.85
+# frames_deque = deque(maxlen=SEQ_LENGTH)  # Cola de frames
+# predictions_deque = deque(maxlen=5)  # Cola para suavizar predicciones
 
-            # Aplica la sustracción de fondo
-            fg_mask = self.bg_subtractor.apply(frame)
+# def camera_view(request):
+#     return render(request, "camera.html")
 
-            # Encuentra los contornos de las áreas en movimiento
-            contours, _ = cv2.findContours(fg_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+# def video_feed():
+#     cap = cv2.VideoCapture(0)
+#     label, color = "Cargando...", (255, 255, 255)  # Inicialización de la etiqueta y color
 
-            # Dibuja los contornos en el cuadro original
-            for contour in contours:
-                if cv2.contourArea(contour) > 500:
-                    (x, y, w, h) = cv2.boundingRect(contour)
-                    cv2.rectangle(frame, (x, y), (w+x, h+y), (0, 255, 0), 2)
+#     while cap.isOpened():
+#         ret, frame = cap.read()
+#         if not ret:
+#             break
 
-                    # Realizar la predicción cada 5 cuadros
-                    if self.frame_count % 5 == 0:
-                        roi = frame[y:y+h, x:x+w]
-                        roi = cv2.resize(roi, (64, 64))
-                        roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-                        roi = roi.reshape(1, -1)
+#         # Preprocesar el frame
+#         frame_resized = cv2.resize(frame, (IMG_SIZE, IMG_SIZE))
+#         frame_rgb = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB) / 255.0
+#         frames_deque.append(frame_rgb)
 
-                        # Predicción de agresión
-                        pred = self.model.predict(roi)
+#         # Realizar predicción cuando haya suficientes frames en la cola
+#         if len(frames_deque) == SEQ_LENGTH:
+#             frames_array = np.array(list(frames_deque)).reshape(1, SEQ_LENGTH, IMG_SIZE, IMG_SIZE, 3)
+#             prediccion = modelo.predict(frames_array)[0][0]
 
-                        if pred == 1:
-                            cv2.rectangle(frame, (x, y), (w+x, h+y), (0, 0, 255), 2)
+#             # Añadir la predicción a la cola de suavizado
+#             predictions_deque.append(prediccion)
+#             avg_prediccion = np.mean(predictions_deque)
 
-            self.frame_count += 1
+#             # Clasificación basada en el promedio de predicciones
+#             if avg_prediccion >= UMBRAL:
+#                 label = f"Violencia: {avg_prediccion:.2f}"
+#                 color = (0, 0, 255)  # Rojo
+#             else:
+#                 label = f"No Violencia: {avg_prediccion:.2f}"
+#                 color = (0, 255, 0)  # Verde
 
-            # Convierte el cuadro a formato JPEG
-            ret, jpeg = cv2.imencode('.jpg', frame)
-            if ret:
-                return jpeg.tobytes()
-            else:
-                return None
+#         # Mostrar el resultado en el frame
+#         cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
 
-# Instancia única de VideoCamera
-camera = VideoCamera(model, bg_subtractor)
+#         # Codificar el frame para la transmisión en el navegador
+#         _, buffer = cv2.imencode('.jpg', frame)
+#         frame_bytes = buffer.tobytes()
+#         yield (b'--frame\r\n'
+#                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+#     cap.release()
+#     cv2.destroyAllWindows()
+
+
 
 def home_view(request):
     return render(request, 'home.html') 
@@ -76,21 +77,19 @@ def about_view(request):
     return render(request, 'about.html') 
 
 def dashboard_view(request):
-    return render(request, 'dashboard.html') 
+    return render(request, 'dashboard.html')
 
-def camera_view(request):
-    return render(request, 'camera.html')
+def video_view(request):
+    return render(request, 'video.html') 
 
 def contact_view(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Procesar la información del formulario
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             message = form.cleaned_data['message']
 
-            # Enviar un correo electrónico
             send_mail(
                 f'Mensaje de {name}',
                 message,
@@ -98,263 +97,212 @@ def contact_view(request):
                 [settings.DEFAULT_FROM_EMAIL],
                 fail_silently=False,
             )
-            return redirect('home')  # Redirige a la página de inicio después de enviar
+            return redirect('home')
     else:
         form = ContactForm()
 
     return render(request, 'contact.html', {'form': form})
 
-def gen(camera):
-    while True:
-        frame = camera.get_frame()
-        if frame:
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-@gzip.gzip_page
-def video_feed(request):
-    try:
-        return StreamingHttpResponse(gen(camera), content_type="multipart/x-mixed-replace; boundary=frame")
-    except Exception as e:  # Maneja errores específicos
-        print(f"Error en video_feed: {str(e)}")
-        return HttpResponse(status=500)
-
-# import cv2
-# from django.http import StreamingHttpResponse, HttpResponseServerError
-# from django.views.decorators import gzip
-# import joblib
-# import numpy as np
-# import threading
-# import time
-
-# class VideoCamera(object):
-#     def __init__(self):
-#         self.video = cv2.VideoCapture(0)
-#         self.is_running = True
-#         self.lock = threading.Lock()
-#         self.frame = None
-#         self.model = joblib.load('modelo_violencia.pkl')
-#         self.scaler = joblib.load('scaler_violencia.pkl')
-#         self.bg_subtractor = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
-#         threading.Thread(target=self._capture_loop, daemon=True).start()
-
-#     def __del__(self):
-#         self.is_running = False
-#         if self.video.isOpened():
-#             self.video.release()
-
-#     def _capture_loop(self):
-#         while self.is_running:
-#             ret, frame = self.video.read()
-#             if not ret:
-#                 time.sleep(0.1)
-#                 continue
-            
-#             with self.lock:
-#                 self.frame = frame
-
-#     def get_frame(self):
-#         with self.lock:
-#             if self.frame is None:
-#                 return None
-#             frame = self.frame.copy()
-
-#         fg_mask = self.bg_subtractor.apply(frame)
-        
-#         contours, _ = cv2.findContours(fg_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-#         for contour in contours:
-#             if cv2.contourArea(contour) > 500:
-#                 (x, y, w, h) = cv2.boundingRect(contour)
-#                 cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-                
-#                 roi = frame[y:y+h, x:x+w]
-#                 roi = cv2.resize(roi, (64, 64))
-#                 roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-#                 roi = roi.reshape(1, -1)
-                
-#                 try:
-#                     roi_scaled = self.scaler.transform(roi)
-#                     pred = self.model.predict(roi_scaled)
-                    
-#                     if pred == 1:  # Asumiendo que 1 representa "violencia"
-#                         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
-#                         cv2.putText(frame, "VIOLENCIA", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0,0,255), 2)
-#                 except Exception as e:
-#                     print(f"Error en la predicción: {e}")
-
-#         _, jpeg = cv2.imencode('.jpg', frame)
-#         return jpeg.tobytes()
-
-# def gen(camera):
-#     while True:
-#         frame = camera.get_frame()
-#         if frame is not None:
-#             yield (b'--frame\r\n'
-#                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-#         else:
-#             break
-
-# @gzip.gzip_page
-# def video_feed(request):
-#     try:
-#         cam = VideoCamera()
-#         return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace;boundary=frame")
-#     except Exception as e:
-#         return HttpResponseServerError(f"Error: {str(e)}")
-
+# from django.http import StreamingHttpResponse
 # import cv2
 # import numpy as np
-# import threading
-# import time
-# import logging
-# from django.conf import settings
+# import tensorflow as tf
+# from collections import deque
 # import os
-# from django.http import StreamingHttpResponse, HttpResponseServerError
-# from django.views.decorators import gzip
+# import imgaug.augmenters as iaa
+# # Ruta del modelo TensorFlow Lite
+# TFLITE_MODEL_PATH = os.path.join(settings.MODEL_DIR, "modelo_cnn_lstm.tflite")
 
-# logging.basicConfig(level=logging.DEBUG)
-# logger = logging.getLogger(__name__)
+# # Configuración
+# IMG_SIZE = 64
+# SEQ_LENGTH = 15
+# UMBRAL = 0.3  # Ajusta según tu preferencia
 
-# class VideoProcessor(object):
-#     def __init__(self, video_path):
-#         self.video_path = os.path.join(settings.MEDIA_ROOT, video_path)
-#         self.video = cv2.VideoCapture(self.video_path)
-#         if not self.video.isOpened():
-#             logger.error(f"No se pudo abrir el video: {self.video_path}")
-#             raise ValueError(f"No se pudo abrir el video: {self.video_path}")
-        
-#         self.fps = self.video.get(cv2.CAP_PROP_FPS)
-#         self.frame_count = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
-#         self.duration = self.frame_count / self.fps
-        
-#         logger.info(f"Video cargado: {self.video_path}")
-#         logger.info(f"FPS: {self.fps}, Duración: {self.duration} segundos")
-        
-#         self.is_running = True
-#         self.lock = threading.Lock()
-#         self.frame = None
-#         self.current_frame = 0
-#         self.bg_subtractor = cv2.createBackgroundSubtractorMOG2()
-#         self.last_frame = None
-#         self.violence_counter = 0
-#         threading.Thread(target=self._process_loop, daemon=True).start()
+# # Cargar el modelo TFLite
+# interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_PATH)
+# interpreter.allocate_tensors()
 
-#     def __del__(self):
-#         self.is_running = False
-#         if self.video.isOpened():
-#             self.video.release()
+# # Obtener índices de entrada y salida
+# input_details = interpreter.get_input_details()
+# output_details = interpreter.get_output_details()
 
-#     def _process_loop(self):
-#         while self.is_running:
-#             ret, frame = self.video.read()
-#             if not ret:
-#                 logger.info("Fin del video alcanzado, reiniciando...")
-#                 self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
-#                 self.current_frame = 0
-#                 continue
-            
-#             with self.lock:
-#                 self.frame = frame
-#                 self.current_frame += 1
+# # Inicializar la cola de frames
+# frames_deque = deque(maxlen=SEQ_LENGTH)
 
-#             logger.debug(f"Frame {self.current_frame} leído con éxito")
+# # Definir secuencia de aumento de datos
+# augmenter = iaa.Sequential([
+#     iaa.Affine(rotate=(-5, 5)),       # Rotación leve
+#     iaa.LinearContrast((0.8, 1.2)),   # Contraste variable
+# ])
 
-#             # Simular la velocidad real del video
-#             time.sleep(1 / self.fps)
+# def preprocess_frame(frame):
+#     frame_resized = cv2.resize(frame, (IMG_SIZE, IMG_SIZE))
+#     frame_rgb = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB) / 255.0
+#     frame_augmented = augmenter(image=frame_rgb)
+#     return frame_augmented
 
-#     def get_frame(self):
-#         with self.lock:
-#             if self.frame is None:
-#                 logger.warning("No hay frame disponible")
-#                 return None
-#             frame = self.frame.copy()
-
-#         # Convertir a escala de grises
-#         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        
-#         # Aplicar sustracción de fondo
-#         fg_mask = self.bg_subtractor.apply(gray)
-        
-#         # Encontrar contornos
-#         contours, _ = cv2.findContours(fg_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-#         # Detectar movimiento significativo
-#         movement_detected = False
-#         for contour in contours:
-#             if cv2.contourArea(contour) > 500:  # Ajusta este valor según sea necesario
-#                 movement_detected = True
-#                 break
-        
-#         # Simulación simple de detección de violencia basada en cambios rápidos
-#         violence_detected = False
-#         if self.last_frame is not None:
-#             # Calcular la diferencia entre frames
-#             frame_diff = cv2.absdiff(gray, self.last_frame)
-#             _, threshold = cv2.threshold(frame_diff, 30, 255, cv2.THRESH_BINARY)
-            
-#             # Si hay muchos píxeles que cambiaron, incrementar el contador de violencia
-#             if np.sum(threshold) > 100000:  # Ajusta este valor según sea necesario
-#                 self.violence_counter += 1
-#             else:
-#                 self.violence_counter = max(0, self.violence_counter - 1)
-            
-#             if self.violence_counter > 5:  # Ajusta este umbral según sea necesario
-#                 violence_detected = True
-        
-#         self.last_frame = gray
-        
-#         # Dibujar rectángulos alrededor de las áreas de movimiento
-#         for contour in contours:
-#             if cv2.contourArea(contour) > 500:
-#                 (x, y, w, h) = cv2.boundingRect(contour)
-#                 cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        
-#         # Crear una barra de estado en la parte inferior
-#         status_bar = np.zeros((100, frame.shape[1], 3), dtype=np.uint8)
-        
-#         # Añadir información sobre el progreso del video y detección
-#         progress = self.current_frame / self.frame_count
-#         cv2.putText(status_bar, f"Progreso: {progress:.2%}", (10, 30), 
-#                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-        
-#         if movement_detected:
-#             cv2.putText(status_bar, "Movimiento detectado", (10, 60), 
-#                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-        
-#         if violence_detected:
-#             cv2.putText(status_bar, "ALERTA: Posible violencia", (10, 90), 
-#                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-
-#         violence_level = min(self.violence_counter / 10, 1.0)  
-#         bar_width = int(violence_level * status_bar.shape[1])
-#         cv2.rectangle(status_bar, (0, 70), (bar_width, 80), (0, 0, 255), -1)
-        
-#         # Combinar el frame con la barra de estado
-#         result = np.vstack((frame, status_bar))
-
-#         try:
-#             _, jpeg = cv2.imencode('.jpg', result)
-#             return jpeg.tobytes()
-#         except Exception as e:
-#             logger.error(f"Error al codificar el frame: {e}")
-#             return None
-
-# def gen(processor):
-#     while True:
-#         frame = processor.get_frame()
-#         if frame is not None:
-#             yield (b'--frame\r\n'
-#                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-#         else:
+# def video_feed():
+#     cap = cv2.VideoCapture(0)
+#     while cap.isOpened():
+#         ret, frame = cap.read()
+#         if not ret:
 #             break
 
-# @gzip.gzip_page
-# def video_feed(request):
-#     try:
-#         video_path = '2.mp4'  
-#         processor = VideoProcessor(video_path)
-#         return StreamingHttpResponse(gen(processor), content_type="multipart/x-mixed-replace;boundary=frame")
-#     except Exception as e:
-#         logger.error(f"Error en video_feed: {e}")
-#         return HttpResponseServerError(f"Error: {str(e)}")
+#         # Preprocesar el frame y agregarlo a la secuencia
+#         processed_frame = preprocess_frame(frame)
+#         frames_deque.append(processed_frame)
+
+#         if len(frames_deque) == SEQ_LENGTH:
+#             # Convertir los frames en un array de la forma que espera el modelo
+#             frames_array = np.array(list(frames_deque), dtype=np.float32).reshape(1, SEQ_LENGTH, IMG_SIZE, IMG_SIZE, 3)
+            
+#             # Realizar la predicción con el modelo TFLite
+#             interpreter.set_tensor(input_details[0]['index'], frames_array)
+#             interpreter.invoke()
+#             prediccion = interpreter.get_tensor(output_details[0]['index'])[0][0]
+
+#             # Determinar la etiqueta en función del umbral
+#             if prediccion >= UMBRAL:
+#                 label = f"Violencia: {prediccion:.2f}"
+#                 color = (0, 0, 255)  # Rojo para violencia
+#             else:
+#                 label = f"No Violencia: {prediccion:.2f}"
+#                 color = (0, 255, 0)  # Verde para no violencia
+
+#             # Mostrar la etiqueta en el frame
+#             cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
+
+#         # Codificar el frame para transmisión
+#         _, buffer = cv2.imencode('.jpg', frame)
+#         frame_bytes = buffer.tobytes()
+#         yield (b'--frame\r\n'
+#                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+#     cap.release()
+
+# def video_feed_view(request):
+#     return StreamingHttpResponse(video_feed(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+
+
+def camera_view(request):
+    return render(request, "camera.html")
+
+
+# # Configuración del modelo TFLite
+# TFLITE_MODEL_PATH = settings.TFLITE_MODEL_PATH  # Ruta de tu modelo TensorFlow Lite
+# IMG_SIZE = 64
+# SEQ_LENGTH = 15
+# UMBRAL = 0.7  # Ajusta este umbral según tus pruebas
+
+# # Cargar el modelo TFLite
+# interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_PATH)
+# interpreter.allocate_tensors()
+
+# input_details = interpreter.get_input_details()
+# output_details = interpreter.get_output_details()
+
+# def preprocess_frame(frame):
+#     frame_resized = cv2.resize(frame, (IMG_SIZE, IMG_SIZE))
+#     frame_rgb = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB) / 255.0
+#     return frame_rgb
+
+# def process_video(file_path):
+#     cap = cv2.VideoCapture(file_path)
+#     frames_deque = deque(maxlen=SEQ_LENGTH)
+#     results = []
+
+#     while cap.isOpened():
+#         ret, frame = cap.read()
+#         if not ret:
+#             break
+
+#         # Preprocesar el frame
+#         processed_frame = preprocess_frame(frame)
+#         frames_deque.append(processed_frame)
+
+#         # Realizar la predicción si tenemos suficientes frames en la secuencia
+#         if len(frames_deque) == SEQ_LENGTH:
+#             frames_array = np.array(list(frames_deque), dtype=np.float32).reshape(1, SEQ_LENGTH, IMG_SIZE, IMG_SIZE, 3)
+#             interpreter.set_tensor(input_details[0]['index'], frames_array)
+#             interpreter.invoke()
+#             prediccion = interpreter.get_tensor(output_details[0]['index'])[0][0]
+
+#             # Almacenar resultado de predicción
+#             label = "Violencia" if prediccion >= UMBRAL else "No Violencia"
+#             results.append((label, prediccion))
+
+#     cap.release()
+#     return results
+
+# def video_prediction_view(request):
+#     if request.method == "POST":
+#         form = VideoUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             video_file = request.FILES['video']
+#             video_path = f"{settings.MEDIA_ROOT}/{video_file.name}"
+#             with open(video_path, 'wb+') as f:
+#                 for chunk in video_file.chunks():
+#                     f.write(chunk)
+            
+#             # Procesar el video y obtener las predicciones
+#             results = process_video(video_path)
+#             return render(request, "video_results.html", {"results": results, "video_name": video_file.name})
+#     else:
+#         form = VideoUploadForm()
+    
+#     return render(request, "video_upload.html", {"form": form})
+
+####
+
+# app/views.py
+from django.http import StreamingHttpResponse
+from surveillance.services.deteccion_servicio import DeteccionViolenciaService
+from surveillance.utils.video_utils import iniciar_camara, leer_frame
+import cv2
+import time
+import threading
+
+def iniciar_streaming():
+    def procesar_stream():
+        cap = iniciar_camara()
+        while True:
+            frame = leer_frame(cap)
+            prediccion = deteccion_servicio.detectar(frame)
+            # Guardar el frame y predicción para acceder en el generador
+            setattr(deteccion_servicio, 'ultimo_frame', frame)
+            setattr(deteccion_servicio, 'ultima_prediccion', prediccion)
+
+    hilo_streaming = threading.Thread(target=procesar_stream, daemon=True)
+    hilo_streaming.start()
+
+# Instancia del servicio
+deteccion_servicio = DeteccionViolenciaService(modelo_path="E:\Proyecto-deteccion-de-violencia\models\modelo_cnn_lstm copy.h5")
+
+def generar_frames():
+    cap = iniciar_camara()
+    while True:
+        frame = leer_frame(cap)
+        if frame is None:
+            break
+
+        # Realiza la predicción
+        prediccion = deteccion_servicio.detectar(frame)
+
+        # Si hay una predicción, muestra el resultado
+        if prediccion is not None:
+            label = f"Violencia: {prediccion:.2f}" if prediccion >= deteccion_servicio.UMBRAL_INICIAL else f"No Violencia: {prediccion:.2f}"
+            color = (0, 0, 255) if prediccion >= deteccion_servicio.UMBRAL_INICIAL else (0, 255, 0)
+            cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
+
+        _, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+        # Agrega un retraso para evitar sobrecarga de CPU
+        time.sleep(0.01)  # Ajusta según rendimiento
+
+def video_feed_view(request):
+    return StreamingHttpResponse(generar_frames(), content_type='multipart/x-mixed-replace; boundary=frame')

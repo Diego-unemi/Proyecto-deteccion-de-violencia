@@ -4,3 +4,8 @@ class ContactForm(forms.Form):
     name = forms.CharField(max_length=100, label='Nombre')
     email = forms.EmailField(label='Correo Electrónico')
     message = forms.CharField(widget=forms.Textarea, label='Mensaje')
+
+
+class VideoUploadForm(forms.Form):
+    video = forms.FileField(label="Subir Video")
+
