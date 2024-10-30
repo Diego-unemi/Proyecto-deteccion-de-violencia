@@ -1,48 +1,315 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}Sistema de Detección de Violencia - SecureVision{% endblock %}
-{% block content %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-gray-100">
-    
-    <main>
-        <section class="container mx-auto px-6 py-16 flex flex-col md:flex-row items-center">
-          <div class="md:w-1/2 mb-8 md:mb-0">
-            <img src="{% static 'images/seguridad.jpg' %}" alt="Sistema de detección de violencia" class="rounded-lg shadow-xl"/>
+{% extends 'base.html' %} {% load static %} {% block title %}Sistema de
+Detección de Violencia - SecureVision{% endblock %} {% block content %}
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+  <!-- Hero Section -->
+  <section id="inicio" class="pt-8 pb-16">
+    <div class="container mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center">
+        <div
+          class="md:w-1/2 mb-8 md:mb-0 transform hover:scale-105 transition duration-500"
+        >
+          <div class="relative">
+            <img
+              src="{% static 'images/seguridad.jpg' %}"
+              alt="Sistema de detección de violencia"
+              class="rounded-lg shadow-2xl object-cover w-full h-[400px]"
+            />
+            <div
+              class="absolute inset-0 bg-red-500 opacity-0 hover:opacity-20 transition duration-300 rounded-lg"
+            ></div>
           </div>
-            <div class="md:w-1/2 md:pl-12">
-                <h1 class="text-4xl font-bold mb-4 text-gray-800">SecureVision</h1>
-                <h2 class="text-2xl font-semibold mb-4 text-red-600">Sistema de Detección de Violencia</h2>
-                <p class="mb-8 text-gray-600">Tecnología avanzada para la identificación y prevención de comportamientos violentos en tiempo real, garantizando la seguridad en espacios públicos y privados.</p>
-                <a href="#" class="bg-red-500 text-white font-bold py-3 px-6 rounded-full hover:bg-red-600 transition duration-300">Saber más</a>
-            </div>
-        </section>
+        </div>
+        <div class="md:w-1/2 md:pl-12">
+          <h1
+            class="text-5xl font-bold mb-4 text-gray-800 opacity-0 transform translate-y-10"
+            id="main-title"
+          >
+            SecureVision
+          </h1>
+          <h2
+            class="text-2xl font-semibold mb-4 text-red-600 opacity-0 transform translate-y-10"
+            id="subtitle"
+          >
+            Sistema de Detección de Violencia
+          </h2>
+          <p
+            class="mb-8 text-gray-600 leading-relaxed opacity-0 transform translate-y-10"
+            id="description"
+          >
+            Tecnología avanzada para la identificación y prevención de
+            comportamientos violentos en tiempo real, garantizando la seguridad
+            en espacios públicos y privados.
+          </p>
+          <div
+            class="space-x-4 opacity-0 transform translate-y-10"
+            id="cta-buttons"
+          >
+            <a
+              href="#demo"
+              class="bg-red-500 text-white font-bold py-3 px-8 rounded-full hover:bg-red-600 transition duration-300 inline-flex items-center group"
+            >
+              <span>Ver Demo</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </a>
+            <a
+              href="{% url 'contact' %}"
+              class="border-2 border-red-500 text-red-500 font-bold py-3 px-8 rounded-full hover:bg-red-50 transition duration-300"
+            >
+              Contactar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <section class="bg-white py-16">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">ACERCA DE NUESTRA TECNOLOGÍA</h2>
-                <div class="max-w-3xl mx-auto text-center">
-                    <p class="text-gray-600 mb-8">
-                        Nuestro sistema utiliza algoritmos de visión por computadora y aprendizaje automático de última generación para detectar y alertar sobre comportamientos violentos en tiempo real. Garantizamos la máxima precisión y eficiencia en la protección de espacios y personas.
-                    </p>
-                </div>
-            </div>
-        </section>
-    </main>
+  <!-- Technology Section -->
+  <section id="tecnologia" class="py-16 bg-white">
+    <div class="container mx-auto px-6">
+      <h2 class="text-3xl font-bold mb-12 text-center text-gray-800">
+        ACERCA DE NUESTRA TECNOLOGÍA
+        <div class="w-24 h-1 bg-red-500 mx-auto mt-4"></div>
+      </h2>
+      <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div
+          class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-2"
+        >
+          <div
+            class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto"
+          >
+            <svg
+              class="w-8 h-8 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mb-2 text-center">
+            Detección en Tiempo Real
+          </h3>
+          <p class="text-gray-600 text-center">
+            Monitoreo continuo y análisis instantáneo de comportamientos
+            mediante IA avanzada.
+          </p>
+        </div>
 
-   
-</body>
-</html>
+        <div
+          class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-2"
+        >
+          <div
+            class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto"
+          >
+            <svg
+              class="w-8 h-8 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+              />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mb-2 text-center">
+            Máxima Precisión
+          </h3>
+          <p class="text-gray-600 text-center">
+            Algoritmos de última generación que garantizan una detección precisa
+            y confiable.
+          </p>
+        </div>
+
+        <div
+          class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-2"
+        >
+          <div
+            class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto"
+          >
+            <svg
+              class="w-8 h-8 text-red-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mb-2 text-center">
+            Respuesta Inmediata
+          </h3>
+          <p class="text-gray-600 text-center">
+            Sistema de alertas instantáneas y protocolos de acción
+            automatizados.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section with Alpine.js -->
+  <section
+    id="caracteristicas"
+    class="py-16 bg-gray-50"
+    x-data="{ activeTab: 'detection' }"
+  >
+    <div class="container mx-auto px-6">
+      <h2 class="text-3xl font-bold mb-12 text-center text-gray-800">
+        CARACTERÍSTICAS PRINCIPALES
+        <div class="w-24 h-1 bg-red-500 mx-auto mt-4"></div>
+      </h2>
+
+      <div
+        class="flex flex-col md:flex-row justify-center space-y-4 md:space-y-0 md:space-x-4 mb-8"
+      >
+        <button
+          @click="activeTab = 'detection'"
+          :class="{ 'bg-red-500 text-white': activeTab === 'detection', 'bg-gray-200 text-gray-700': activeTab !== 'detection' }"
+          class="px-6 py-2 rounded-full transition duration-300"
+        >
+          Detección
+        </button>
+        <button
+          @click="activeTab = 'analysis'"
+          :class="{ 'bg-red-500 text-white': activeTab === 'analysis', 'bg-gray-200 text-gray-700': activeTab !== 'analysis' }"
+          class="px-6 py-2 rounded-full transition duration-300"
+        >
+          Análisis
+        </button>
+        <button
+          @click="activeTab = 'alerts'"
+          :class="{ 'bg-red-500 text-white': activeTab === 'alerts', 'bg-gray-200 text-gray-700': activeTab !== 'alerts' }"
+          class="px-6 py-2 rounded-full transition duration-300"
+        >
+          Alertas
+        </button>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <div x-show="activeTab === 'detection'" class="animate-fade-in">
+          <h3 class="text-2xl font-semibold mb-4">Detección Avanzada</h3>
+          <p class="text-gray-600">
+            Nuestro sistema utiliza algoritmos de última generación para
+            detectar comportamientos violentos en tiempo real, con una precisión
+            superior al 95%.
+          </p>
+        </div>
+
+        <div x-show="activeTab === 'analysis'" class="animate-fade-in">
+          <h3 class="text-2xl font-semibold mb-4">Análisis Inteligente</h3>
+          <p class="text-gray-600">
+            Procesamiento avanzado de imágenes y comportamientos que permite
+            identificar patrones y prevenir situaciones de riesgo antes de que
+            ocurran.
+          </p>
+        </div>
+
+        <div x-show="activeTab === 'alerts'" class="animate-fade-in">
+          <h3 class="text-2xl font-semibold mb-4">Sistema de Alertas</h3>
+          <p class="text-gray-600">
+            Notificaciones instantáneas y reportes detallados que permiten una
+            respuesta inmediata ante cualquier incidente detectado.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- JavaScript for animations -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Animate elements on page load
+    const elements = [
+      document.getElementById("main-title"),
+      document.getElementById("subtitle"),
+      document.getElementById("description"),
+      document.getElementById("cta-buttons"),
+    ];
+
+    setTimeout(() => {
+      elements.forEach((element, index) => {
+        setTimeout(() => {
+          element.classList.add("animate-fade-in");
+          element.style.opacity = "1";
+          element.style.transform = "translateY(0)";
+          element.style.transition = "all 0.8s ease-out";
+        }, index * 200);
+      });
+    }, 100);
+
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px",
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("animate-fade-in");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections
+    document.querySelectorAll("section").forEach((section) => {
+      observer.observe(section);
+    });
+  });
+
+  // Add custom CSS for animations
+  const style = document.createElement("style");
+  style.textContent = `
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+  document.head.appendChild(style);
+</script>
 {% endblock %}

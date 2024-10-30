@@ -11,7 +11,7 @@ from tensorflow.keras.models import Model
 
 # Configuración
 IMG_SIZE = 64
-SEQ_LENGTH = 15  # Longitud de la secuencia de frames por video
+SEQ_LENGTH = 15  
 VideoDataDir = 'D:/entrenamiento/Violence Dataset'
 
 # Función para procesar un video en secuencias de frames
