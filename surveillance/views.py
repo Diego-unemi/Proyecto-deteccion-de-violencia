@@ -278,7 +278,7 @@ def iniciar_streaming():
     hilo_streaming.start()
 
 # Instancia del servicio
-deteccion_servicio = DeteccionViolenciaService(modelo_path="E:\Proyecto-deteccion-de-violencia\models\modelo_cnn_lstm copy.h5")
+deteccion_servicio = DeteccionViolenciaService(modelo_path="models/modelo_cnn_lstm copy.h5")
 
 def generar_frames():
     cap = iniciar_camara()
