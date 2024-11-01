@@ -35,6 +35,10 @@ class DeteccionViolenciaService:
             prediccion = self.modelo.predict(frames_array)[0][0]
             self.predicciones.append(prediccion)
             self.frame_anterior = gray_frame
+<<<<<<< HEAD
             return np.mean(self.predicciones)  # Suavizado
+=======
+            return np.mean(self.predicciones) 
+>>>>>>> 1056968 (update views)
         self.frame_anterior = gray_frame
         return None
