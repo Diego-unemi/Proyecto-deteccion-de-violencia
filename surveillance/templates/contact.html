@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends 'base.html' %} {% block title %}Contacto - ViolenciaDetector{%
 endblock %} {% block content %}
 <div
@@ -62,4 +63,17 @@ endblock %} {% block content %}
       responseMessage.classList.remove("hidden");
     });
 </script>
+=======
+{% extends 'base.html' %}
+
+{% block title %}Contacto - ViolenciaDetector{% endblock %}
+
+{% block content %}
+  <h2>Contacto</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Enviar</button>
+  </form>
+>>>>>>> 1056968 (update views)
 {% endblock %}

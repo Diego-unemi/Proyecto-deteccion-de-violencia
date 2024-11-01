@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends 'base.html' %} {% load static %} {% block title %}Sistema de
 Detección de Violencia - SecureVision{% endblock %} {% block content %}
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
@@ -312,4 +313,53 @@ Detección de Violencia - SecureVision{% endblock %} {% block content %}
 `;
   document.head.appendChild(style);
 </script>
+=======
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Sistema de Detección de Violencia - SecureVision{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    
+    <main>
+        <section class="container mx-auto px-6 py-16 flex flex-col md:flex-row items-center">
+          <div class="md:w-1/2 mb-8 md:mb-0">
+            <img src="{% static 'images/seguridad.jpg' %}" alt="Sistema de detección de violencia" class="rounded-lg shadow-xl"/>
+          </div>
+            <div class="md:w-1/2 md:pl-12">
+                <h1 class="text-4xl font-bold mb-4 text-gray-800">SecureVision</h1>
+                <h2 class="text-2xl font-semibold mb-4 text-red-600">Sistema de Detección de Violencia</h2>
+                <p class="mb-8 text-gray-600">Tecnología avanzada para la identificación y prevención de comportamientos violentos en tiempo real, garantizando la seguridad en espacios públicos y privados.</p>
+                <a href="#" class="bg-red-500 text-white font-bold py-3 px-6 rounded-full hover:bg-red-600 transition duration-300">Saber más</a>
+            </div>
+        </section>
+
+        <section class="bg-white py-16">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">ACERCA DE NUESTRA TECNOLOGÍA</h2>
+                <div class="max-w-3xl mx-auto text-center">
+                    <p class="text-gray-600 mb-8">
+                        Nuestro sistema utiliza algoritmos de visión por computadora y aprendizaje automático de última generación para detectar y alertar sobre comportamientos violentos en tiempo real. Garantizamos la máxima precisión y eficiencia en la protección de espacios y personas.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+   
+</body>
+</html>
+>>>>>>> 1056968 (update views)
 {% endblock %}
