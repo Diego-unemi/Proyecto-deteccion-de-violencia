@@ -10,9 +10,5 @@ def leer_frame(cap):
     ret, frame = cap.read()
     if not ret:
         return None
-<<<<<<< HEAD
     frame = cv2.resize(frame, (320, 240))  # Ejemplo de redimensionamiento
-=======
-    frame = cv2.resize(frame, (320, 240))  
->>>>>>> 1056968 (update views)
     return frame

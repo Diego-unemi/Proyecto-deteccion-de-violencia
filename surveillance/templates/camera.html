@@ -1,323 +1,4 @@
-<<<<<<< HEAD
-{% extends 'base.html' %} {% load static %} {% block title %}Cámara -
-ViolenciaDetector{% endblock %} {% block content %}
-<main class="container mx-auto px-6 py-8">
-  <!-- Header con indicador de estado -->
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-800">
-      Importar Videos para Análisis
-    </h1>
-    <div class="flex items-center space-x-2">
-      <span class="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
-      <span class="text-sm text-gray-600">Sistema Activo</span>
-    </div>
-  </div>
-
-  <!-- Sección de carga de video -->
-  <div
-    class="bg-white rounded-lg shadow-md p-6 mb-8 transition duration-300 hover:shadow-lg"
-  >
-    <h2 class="text-xl font-semibold mb-4 text-gray-700">Cargar Nuevo Video</h2>
-    <form
-      action="#"
-      method="post"
-      enctype="multipart/form-data"
-      id="upload-form"
-    >
-      <div class="mb-4 relative">
-        <label
-          for="video-file"
-          class="block text-gray-700 text-sm font-bold mb-2"
-          >Seleccionar archivo de video:</label
-        >
-        <input
-          type="file"
-          id="video-file"
-          name="video-file"
-          accept="video/*"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-red-500 hover:border-gray-400 transition duration-300"
-        />
-        <div id="file-name" class="text-sm text-gray-500 mt-1"></div>
-      </div>
-      <div class="mb-4">
-        <label
-          for="video-name"
-          class="block text-gray-700 text-sm font-bold mb-2"
-          >Nombre del video:</label
-        >
-        <input
-          type="text"
-          id="video-name"
-          name="video-name"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-red-500 hover:border-gray-400 transition duration-300"
-        />
-      </div>
-      <div class="mb-4">
-        <label
-          for="video-description"
-          class="block text-gray-700 text-sm font-bold mb-2"
-          >Descripción (opcional):</label
-        >
-        <textarea
-          id="video-description"
-          name="video-description"
-          rows="3"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-red-500 hover:border-gray-400 transition duration-300"
-        ></textarea>
-      </div>
-      <div class="flex items-center justify-between">
-        <button
-          type="submit"
-          id="submit-btn"
-          class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-300 flex items-center space-x-2"
-        >
-          <span>Importar Video</span>
-          <span id="loading-spinner" class="hidden">
-            <svg
-              class="animate-spin h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-          </span>
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Sección de transmisión de video -->
-  <div
-    class="bg-white rounded-lg shadow-md p-6 mb-8 transition duration-300 hover:shadow-lg"
-  >
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold text-gray-700">
-        Transmisión de Video en Tiempo Real
-      </h2>
-      <button
-        id="fullscreen-btn"
-        class="p-2 rounded-md hover:bg-gray-100 transition duration-300"
-      >
-        <svg
-          class="w-5 h-5 text-gray-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 8V4m0 0h4M4 4l5 5m11-5V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
-          />
-        </svg>
-      </button>
-    </div>
-    <div
-      class="video-container relative aspect-video bg-black rounded-lg overflow-hidden"
-    >
-      <img
-        src="{% url 'video_feed' %}"
-        class="absolute inset-0 w-full h-full object-contain"
-        alt="Transmisión de Video"
-      />
-    </div>
-  </div>
-
-  <!-- Sección de videos recientes -->
-  <div
-    class="bg-white rounded-lg shadow-md p-6 transition duration-300 hover:shadow-lg"
-  >
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold text-gray-700">
-        Videos Importados Recientemente
-      </h2>
-      <input
-        type="text"
-        id="search-videos"
-        placeholder="Buscar videos..."
-        class="px-4 py-2 border rounded-md focus:outline-none focus:border-red-500 text-sm"
-      />
-    </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200" id="videos-table">
-        <thead class="bg-gray-50">
-          <tr>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-            >
-              Nombre
-              <span class="ml-1">↑</span>
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-            >
-              Fecha de Importación
-              <span class="ml-1">↓</span>
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Estado
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Acciones
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200" id="videos-body">
-          <tr class="hover:bg-gray-50 transition duration-150">
-            <td class="px-6 py-4 whitespace-nowrap">Video_Cámara_1.mp4</td>
-            <td class="px-6 py-4 whitespace-nowrap">2024-09-25 14:30</td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-              >
-                Analizado
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <button
-                class="text-indigo-600 hover:text-indigo-900 mr-2 transition duration-150"
-              >
-                Ver
-              </button>
-              <button
-                class="text-red-600 hover:text-red-900 transition duration-150"
-              >
-                Eliminar
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</main>
-
-<div id="notification" class="fixed bottom-4 right-4 hidden">
-  <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
-    <span id="notification-message"></span>
-  </div>
-</div>
-
-<script>
-  // Manejo del formulario de carga
-  const form = document.getElementById("upload-form");
-  const fileInput = document.getElementById("video-file");
-  const fileName = document.getElementById("file-name");
-  const submitBtn = document.getElementById("submit-btn");
-  const loadingSpinner = document.getElementById("loading-spinner");
-
-  fileInput.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      fileName.textContent = `Archivo seleccionado: ${file.name}`;
-      // Auto-rellenar el nombre del video
-      document.getElementById("video-name").value = file.name.replace(
-        /\.[^/.]+$/,
-        ""
-      );
-    }
-  });
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (!fileInput.files[0]) {
-      showNotification("Por favor selecciona un video", "error");
-      return;
-    }
-
-    submitBtn.disabled = true;
-    loadingSpinner.classList.remove("hidden");
-
-    // Simular carga
-    setTimeout(() => {
-      showNotification("Video cargado exitosamente", "success");
-      submitBtn.disabled = false;
-      loadingSpinner.classList.add("hidden");
-      form.reset();
-      fileName.textContent = "";
-    }, 2000);
-  });
-
-  // Funcionalidad de pantalla completa
-  const fullscreenBtn = document.getElementById("fullscreen-btn");
-  const videoContainer = document.querySelector(".video-container");
-
-  fullscreenBtn.addEventListener("click", () => {
-    if (!document.fullscreenElement) {
-      videoContainer.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
-  });
-
-  // Búsqueda en tabla
-  const searchInput = document.getElementById("search-videos");
-  const tableRows = document.querySelectorAll("#videos-body tr");
-
-  searchInput.addEventListener("input", (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    tableRows.forEach((row) => {
-      const text = row.textContent.toLowerCase();
-      row.style.display = text.includes(searchTerm) ? "" : "none";
-    });
-  });
-
-  // Sistema de notificaciones
-  function showNotification(message, type = "success") {
-    const notification = document.getElementById("notification");
-    const notificationMessage = document.getElementById("notification-message");
-
-    notification.firstElementChild.className = `bg-${
-      type === "success" ? "green" : "red"
-    }-500 text-white px-6 py-3 rounded-lg shadow-lg`;
-    notificationMessage.textContent = message;
-    notification.classList.remove("hidden");
-
-    setTimeout(() => {
-      notification.classList.add("hidden");
-    }, 3000);
-  }
-
-  // Confirmación para eliminar
-  document.querySelectorAll("button").forEach((button) => {
-    if (button.textContent === "Eliminar") {
-      button.addEventListener("click", (e) => {
-        if (confirm("¿Estás seguro de que deseas eliminar este video?")) {
-          const row = e.target.closest("tr");
-          row.classList.add("opacity-0");
-          setTimeout(() => row.remove(), 300);
-          showNotification("Video eliminado exitosamente");
-        }
-      });
-    }
-  });
-</script>
-=======
 {% extends 'base.html' %}
-
-{% load static %}
 
 {% block title %}Cámara - ViolenciaDetector{% endblock %}
 
@@ -364,14 +45,21 @@ ViolenciaDetector{% endblock %} {% block content %}
             </form>
         </div>
 
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8 justify-center " >
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8 justify-center">
             <h2 class="text-xl font-semibold mb-4 text-gray-700">Transmisión de Video en Tiempo Real</h2>
-            <div class="video-container mb-4">
-                <img src="{% url 'video_feed' %}" class="mx-auto rounded-lg shadow-lg" alt="Transmisión de Video">
+            <div class="flex items-center justify-center mb-4">
+                <button id="activar-transmision" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Activar Transmisión
+                </button>
+                <button id="detener-transmision" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-4">
+                    Detener Transmisión
+                </button>
+            </div>
+            <div id="video-container" class="video-container mb-4 hidden">
+                <img id="video-stream" src="" class="mx-auto rounded-lg shadow-lg" alt="Transmisión de Video">
             </div>
             <div id="resultado-prediccion" class="text-center text-xl font-semibold text-gray-800"></div>
         </div>
-        
 
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-semibold mb-4 text-gray-700">Videos Importados Recientemente</h2>
@@ -402,8 +90,22 @@ ViolenciaDetector{% endblock %} {% block content %}
         </div>
     </main>
 
+    <script>
+        document.getElementById('activar-transmision').addEventListener('click', function() {
+            var videoStream = document.getElementById('video-stream');
+            var videoContainer = document.getElementById('video-container');
+            videoContainer.classList.remove('hidden');
+            videoStream.src = "{% url 'video_feed' %}";
+        });
     
+        document.getElementById('detener-transmision').addEventListener('click', function() {
+            var videoStream = document.getElementById('video-stream');
+            var videoContainer = document.getElementById('video-container');
+            videoContainer.classList.add('hidden');
+            videoStream.src = "";
+            fetch("{% url 'stop_feed' %}");
+        });
+    </script>
 </body>
 </html>
->>>>>>> 1056968 (update views)
 {% endblock %}

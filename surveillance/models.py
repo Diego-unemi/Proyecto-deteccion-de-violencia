@@ -18,3 +18,18 @@ class Detection(models.Model):
 
     def __str__(self):
         return f"{self.result} en {self.video.file_path} con {self.confidence*100}% de confianza"
+    
+class Incident(models.Model):
+    INCIDENT_TYPES = [
+        ('VIOLENCE', 'Violence'),
+        ('NON_VIOLENCE', 'Non-Violence'),
+    ]
+
+    incident_type = models.CharField(max_length=50, choices=INCIDENT_TYPES, default='NON_VIOLENCE')
+    location = models.CharField(max_length=255, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True, null=True)
+    captured_video_url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.incident_type} at {self.timestamp}"

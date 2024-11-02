@@ -1,69 +1,4 @@
-<<<<<<< HEAD
-{% extends 'base.html' %} {% block title %}Contacto - ViolenciaDetector{%
-endblock %} {% block content %}
-<div
-  class="max-w-md mx-auto my-10 p-5 border border-gray-300 rounded-lg shadow-md"
->
-  <h2 class="text-2xl font-semibold mb-4">Contacto</h2>
-  <form method="post" id="contact-form">
-    {% csrf_token %}
 
-    <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-1" for="id_name"
-        >Nombre</label
-      >
-      {{ form.name }}
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-1" for="id_email"
-        >Correo Electrónico</label
-      >
-      {{ form.email }}
-    </div>
-
-    <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-1" for="id_message"
-        >Mensaje</label
-      >
-      {{ form.message }}
-    </div>
-
-    <button
-      type="submit"
-      class="w-full py-2 mt-4 text-white bg-blue-600 hover:bg-blue-700 rounded transition duration-300"
-    >
-      Enviar
-    </button>
-  </form>
-  <div id="response-message" class="mt-4 text-green-600 hidden"></div>
-</div>
-
-<script>
-  document
-    .getElementById("contact-form")
-    .addEventListener("submit", function (event) {
-      event.preventDefault(); // Previene el envío del formulario para la validación
-
-      const name = document.querySelector('[name="name"]').value;
-      const email = document.querySelector('[name="email"]').value;
-      const message = document.querySelector('[name="message"]').value;
-      const responseMessage = document.getElementById("response-message");
-
-      // Ejemplo de validación simple
-      if (!name || !email || !message) {
-        responseMessage.textContent = "Por favor, completa todos los campos.";
-        responseMessage.classList.remove("hidden");
-        return;
-      }
-
-      // Si la validación pasa, se envía el formulario
-      this.submit();
-      responseMessage.textContent = "¡Mensaje enviado con éxito!";
-      responseMessage.classList.remove("hidden");
-    });
-</script>
-=======
 {% extends 'base.html' %}
 
 {% block title %}Contacto - ViolenciaDetector{% endblock %}
@@ -75,5 +10,4 @@ endblock %} {% block content %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Enviar</button>
   </form>
->>>>>>> 1056968 (update views)
 {% endblock %}

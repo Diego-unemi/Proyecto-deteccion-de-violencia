@@ -45,43 +45,11 @@ def contact_view(request):
 
     return render(request, 'contact.html', {'form': form})
 
-# def iniciar_streaming():
-#     def procesar_stream():
-#         cap = iniciar_camara()
-#         while True:
-#             frame = leer_frame(cap)
-#             prediccion = deteccion_servicio.detectar(frame)
-#             setattr(deteccion_servicio, 'ultimo_frame', frame)
-#             setattr(deteccion_servicio, 'ultima_prediccion', prediccion)
-
-#     hilo_streaming = threading.Thread(target=procesar_stream, daemon=True)
-#     hilo_streaming.start()
-
-# deteccion_servicio = DeteccionViolenciaService(modelo_path="models/modelo_cnn_lstm copy.h5")
-
-# def generar_frames():
-#     cap = iniciar_camara()
-#     while True:
-#         frame = leer_frame(cap)
-#         if frame is None:
-#             break
-
-#         prediccion = deteccion_servicio.detectar(frame)
-
-#         if prediccion is not None:
-#             label = f"Violencia: {prediccion:.2f}" if prediccion >= deteccion_servicio.UMBRAL_INICIAL else f"No Violencia: {prediccion:.2f}"
-#             color = (0, 0, 255) if prediccion >= deteccion_servicio.UMBRAL_INICIAL else (0, 255, 0)
-#             cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
-
-#         _, buffer = cv2.imencode('.jpg', frame)
-#         frame = buffer.tobytes()
-#         yield (b'--frame\r\n'
-#                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-#         time.sleep(0.01)  
-
-# def video_feed_view(request):
-#     return StreamingHttpResponse(generar_frames(), content_type='multipart/x-mixed-replace; boundary=frame')
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.conf import settings
+from .forms import ContactForm
+from .models import Incident  # Importar el modelo de Incidente
 
 # Importaciones necesarias
 import cv2
@@ -102,17 +70,17 @@ UMBRAL_MOVIMIENTO = 20000
 frames_deque = deque(maxlen=SEQ_LENGTH)
 predicciones = deque(maxlen=5)
 frame_anterior = None
-
+transmitir = False
 # Generador de frames para la detección en tiempo real
 def generar_frames():
-    global frame_anterior, frames_deque, predicciones
+    global frame_anterior, frames_deque, predicciones, transmitir
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
         cap.release()
         raise RuntimeError("No se pudo acceder a la cámara.")
 
-    while True:
+    while transmitir:
         ret, frame = cap.read()
         if not ret:
             break
@@ -140,13 +108,22 @@ def generar_frames():
                 predicciones.append(prediccion)
 
                 prediccion_suavizada = np.median(predicciones)
-                label = f"Comportamiento violento: {prediccion_suavizada:.2f}" if prediccion_suavizada >= UMBRAL_INICIAL else f"Comportamiento no violento: {prediccion_suavizada:.2f}"
+                label = "Comportamiento violento" if prediccion_suavizada >= UMBRAL_INICIAL else "Comportamiento no violento"
                 color = (0, 0, 255) if prediccion_suavizada >= UMBRAL_INICIAL else (0, 255, 0)
 
                 # Visualización en pantalla
-                cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
+                cv2.putText(frame, f"{label}: {prediccion_suavizada:.2f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2, cv2.LINE_AA)
                 cv2.rectangle(frame, (10, 60), (int(prediccion_suavizada * 300) + 10, 80), color, -1)
                 cv2.putText(frame, f"Confianza: {prediccion_suavizada:.2f}", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2, cv2.LINE_AA)
+
+                # Registro del incidente en la base de datos
+                if prediccion_suavizada >= UMBRAL_INICIAL:
+                    new_incident = Incident(
+                        incident_type='VIOLENCE',
+                        location="Cámara en tiempo real",
+                        description=f"Predicción de VIOLENCE con confianza de {prediccion_suavizada:.2f}"
+                    )
+                    new_incident.save()
 
         frame_anterior = gray_frame
         ret, jpeg = cv2.imencode('.jpg', frame)
@@ -162,9 +139,28 @@ def generar_frames():
 # Vista de la transmisión en tiempo real
 @gzip.gzip_page
 def video_feed(request):
+    global transmitir
+    transmitir = True
     return StreamingHttpResponse(generar_frames(), content_type='multipart/x-mixed-replace; boundary=frame')
 
-# En tu archivo urls.py, agrega la siguiente ruta
-# urlpatterns = [
-#     path('video_feed/', views.video_feed, name='video_feed'),
-# ]
+def stop_feed(request):
+    global transmitir
+    transmitir = False
+    return redirect('camera_view')
+
+from django.shortcuts import render
+from .models import Incident
+
+def incident_list(request):
+    incidents = Incident.objects.all().order_by('-timestamp')
+    return render(request, 'incident_list.html', {'incidents': incidents})
+
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import Incident
+
+def delete_incident(request, id):
+    incident = get_object_or_404(Incident, id=id)
+    if request.method == 'POST':
+        incident.delete()
+        return redirect('incident_list')

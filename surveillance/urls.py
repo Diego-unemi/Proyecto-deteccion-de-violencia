@@ -7,11 +7,8 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('contact/', views.contact_view, name='contact'),
     path('camera/', views.camera_view, name='camera'),
-<<<<<<< HEAD
-    path('video_feed/', views.video_feed_view, name='video_feed'),
-=======
     path('video_feed/', views.video_feed, name='video_feed'),
->>>>>>> 1056968 (update views)
-
-    
+    path('incident_list/', views.incident_list, name='incident_list'),
+    path('stop_feed/', views.stop_feed, name='stop_feed'),
+    path('delete_incident/<int:id>/', views.delete_incident, name='delete_incident'),
 ]
