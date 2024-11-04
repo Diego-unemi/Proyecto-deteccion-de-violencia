@@ -58,15 +58,7 @@ class Alert(models.Model):
         return f"{self.severity_level} Alert for {self.user}"
     
 
-class IncidentReport(models.Model):
-    detected_time = models.DateTimeField()
-    location = models.CharField(max_length=255)
-    severity = models.CharField(max_length=50)
-    description = models.TextField()
-    video_file = models.FileField(upload_to='incident_videos/')
 
-    def __str__(self):
-        return f"Incident on {self.detected_time} - {self.severity}"
     
 
 
