@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Incidentes - SecureVision{% endblock %}
+
+{% block content %}
+<main class="container mx-auto px-6 py-8">
+    <h1 class="text-3xl font-bold mb-10 text-gray-800 text-center">Registro de Incidentes</h1>
+
+    <!-- Filtros de Búsqueda -->
+    <form method="get" action="{% url 'incident_list' %}" class="mb-8 flex flex-wrap gap-4 items-center justify-center">
+        <div class="w-full sm:w-auto">
+            <label for="incident_type" class="block text-sm font-medium text-gray-700">Tipo de Incidente</label>
+            <select id="incident_type" name="incident_type" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                <option value="">Todos</option>
+                <option value="VIOLENCE">Violencia</option>
+                <option value="NO_VIOLENCE">No Violencia</option>
+            </select>
+        </div>
+        <div class="w-full sm:w-auto">
+            <label for="date" class="block text-sm font-medium text-gray-700">Fecha</label>
+            <input type="date" id="date" name="date" class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+        </div>
+        <div class="w-full sm:w-auto">
+            <button type="submit" class="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-6 sm:mt-0">
+                Filtrar
+            </button>
+        </div>
+    </form>
+
+    <!-- Contenedor de tablas en dos columnas -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Tabla de Incidentes en Tiempo Real -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700 text-center">Historial de Incidentes en Tiempo Real</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Fecha y Hora</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Tipo de Incidente</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Ubicación</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Descripción</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for incident in incidents_realtime %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ incident.timestamp }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if incident.incident_type == 'VIOLENCE' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Violencia</span>
+                                {% else %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">No Violencia</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ incident.location }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ incident.description }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <form action="{% url 'delete_incident' incident.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
+                                No se encontraron incidentes en tiempo real.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tabla de Incidentes por Upload -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700 text-center">Historial de Incidentes por Upload</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Fecha y Hora</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Tipo de Incidente</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Descripción</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Fuente</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for incident in incidents_upload %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ incident.timestamp }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ incident.incident_type }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ incident.description }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ incident.get_source_display }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
+                                No se encontraron incidentes por upload.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Cámara - ViolenciaDetector{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 py-12">
+    <main class="container mx-auto px-6">
+        <h1 class="text-4xl font-extrabold mb-8 text-gray-900 text-center">Importar Videos para Análisis</h1>
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Cargar Nuevo Video</h2>
+            <form action="{% url 'importar_video' %}" method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    {{ form.as_p }}
+                </div>
+                <div class="flex items-center justify-center">
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-8 rounded-lg shadow-md transition duration-300 focus:outline-none focus:ring-4 focus:ring-red-300">
+                        Importar Video
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% if resultado %}
+        <div class="bg-white rounded-lg shadow-lg p-8 mt-8">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Resultados del Análisis</h2>
+            <div class="flex flex-col md:flex-row items-center md:items-start">
+                <div class="w-full md:w-2/3 mb-4 md:mb-0 md:mr-6">
+                    <video width="100%" controls class="rounded-lg border border-gray-300">
+                        <source src="{{ video_path }}" type="video/mp4">
+                        Tu navegador no soporta la reproducción de video.
+                    </video>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-300">
+                        <p class="text-lg font-semibold mb-2">Detalles del Video</p>
+                        <p class="text-gray-700 mb-1"><strong>Nombre del Video:</strong> {{ video_name }}</p>
+                        <p class="text-gray-700 mb-1"><strong>Descripción:</strong> {{ video_description }}</p>
+                        <p class="text-gray-700 mb-1"><strong>Resultado:</strong> <span class="font-bold {% if resultado == 'Violento' %}text-red-500{% else %}text-green-500{% endif %}">{{ resultado }}</span></p>
+                        <p class="text-gray-700 mb-1"><strong>Nivel de Violencia:</strong> {{ detalles.nivel_violencia }}</p>
+                        <p class="text-gray-700"><strong>Confianza:</strong> {{ detalles.confianza }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+</div>
+{% endblock %}

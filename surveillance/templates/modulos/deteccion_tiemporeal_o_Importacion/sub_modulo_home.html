@@ -1,0 +1,32 @@
+{% extends 'base.html' %} 
+{% block title %}Sistema de Detección de Violencia - SecureVision{% endblock %} 
+{% block content %}
+<div class="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
+  <section class="py-12">
+    <div class="container mx-auto p-6 lg:px-12">
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-extrabold text-gray-800 mb-4">Seleccione el Tipo de Detección</h2>
+        <p class="text-lg text-gray-600">Elija entre monitoreo en tiempo real o mediante la importación de archivos para analizar videos y generar reportes.</p>
+      </div>
+      <div class="flex justify-center">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="bg-white shadow-lg rounded-xl p-8 transition-transform transform hover:scale-105 hover:shadow-2xl">
+            <div class="text-center">
+              <h5 class="text-2xl font-semibold mb-4 text-blue-700">Monitoreo en Tiempo Real</h5>
+              <p class="text-gray-600 mb-6">Configuración de comportamientos predefinidos para detección en tiempo real. Ideal para entornos con monitoreo constante.</p>
+              <a href="{% url 'camera' %}" class="inline-block bg-blue-500 text-white font-medium py-3 px-6 rounded-full hover:bg-blue-600">Comenzar</a>
+            </div>
+          </div>
+          <div class="bg-white shadow-lg rounded-xl p-8 transition-transform transform hover:scale-105 hover:shadow-2xl">
+            <div class="text-center">
+              <h5 class="text-2xl font-semibold mb-4 text-green-700">Monitoreo Mediante Importación</h5>
+              <p class="text-gray-600 mb-6">Suba videos previamente grabados y obtenga reportes detallados sobre los niveles de violencia detectados.</p>
+              <a href="{% url 'video_upload' %}" class="inline-block bg-green-500 text-white font-medium py-3 px-6 rounded-full hover:bg-green-600">Comenzar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

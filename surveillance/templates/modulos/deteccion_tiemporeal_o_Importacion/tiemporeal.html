@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Cámara - ViolenciaDetector{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 py-12">
+    <main class="container mx-auto px-6">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 text-center">Transmisión de Video en Tiempo Real</h2>
+            <div class="flex items-center justify-center space-x-4 mb-6">
+                <button id="activar-transmision" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400">
+                    Activar Transmisión
+                </button>
+                <button id="detener-transmision" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400">
+                    Detener Transmisión
+                </button>
+            </div>
+            <div id="video-container" class="video-container hidden mb-4">
+                <img id="video-stream" src="" class="mx-auto rounded-lg shadow-lg w-full max-w-4xl" alt="Transmisión de Video">
+            </div>
+            <div id="resultado-prediccion" class="text-center text-lg font-semibold text-gray-700"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.getElementById('activar-transmision').addEventListener('click', function() {
+        var videoStream = document.getElementById('video-stream');
+        var videoContainer = document.getElementById('video-container');
+        videoContainer.classList.remove('hidden');
+        videoStream.src = "{% url 'video_feed' %}";
+    });
+
+    document.getElementById('detener-transmision').addEventListener('click', function() {
+        var videoStream = document.getElementById('video-stream');
+        var videoContainer = document.getElementById('video-container');
+        videoContainer.classList.add('hidden');
+        videoStream.src = "";
+        fetch("{% url 'stop_feed' %}");
+    });
+</script>
+{% endblock %}
