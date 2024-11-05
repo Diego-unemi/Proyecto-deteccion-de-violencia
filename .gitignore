@@ -39,9 +39,8 @@ env/
 venv/
 ENV/
 env.bak/
-<<<<<<< HEAD
 venv.bak/
 entorno_ws/
-=======
-venv.bak/
->>>>>>> 1056968 (update views)
+
+#Dataset
+Violence Dataset/
