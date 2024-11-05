@@ -3,12 +3,29 @@
 {% block title %}Cámara - ViolenciaDetector{% endblock %}
 
 {% block content %}
+{% if messages %}
+<div class="container mx-auto mt-4">
+    {% for message in messages %}
+        <div class="{% if message.tags == 'error' %}bg-red-500 text-white{% elif message.tags == 'success' %}bg-green-500 text-white{% elif message.tags == 'warning' %}bg-yellow-500 text-white{% endif %} text-center py-2 px-4 mb-4 rounded-lg">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+
 <div class="min-h-screen bg-gray-100 py-12">
     <main class="container mx-auto px-6">
         <h1 class="text-4xl font-extrabold mb-8 text-gray-900 text-center">Importar Videos para Análisis</h1>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden">
+            <div class="text-white text-2xl font-bold">Procesando el video, gracias por esperar JIJIJA...</div>
+        </div>
+
         <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
             <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Cargar Nuevo Video</h2>
-            <form action="{% url 'importar_video' %}" method="post" enctype="multipart/form-data" class="space-y-6">
+            <form action="{% url 'importar_video' %}" method="post" enctype="multipart/form-data" class="space-y-6" id="importar-video-form">
                 {% csrf_token %}
                 <div class="space-y-4">
                     {{ form.as_p }}
@@ -46,4 +63,25 @@
         {% endif %}
     </main>
 </div>
+
+<script>
+    // Tipos de video permitidos
+    const allowedVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
+
+    document.getElementById('importar-video-form').addEventListener('submit', function (event) {
+        const fileInput = document.querySelector('input[type="file"]');
+        const file = fileInput.files[0];
+
+        // Verifica si el archivo es seleccionado y si es un tipo de video válido
+        if (file && !allowedVideoTypes.includes(file.type)) {
+            event.preventDefault(); // Evita el envío del formulario
+            alert("El archivo seleccionado no es un video válido. Por favor, suba un archivo de video en formato MP4, WebM o Ogg.");
+            return;
+        }
+
+        // Muestra la alerta de carga si el archivo es válido
+        document.getElementById('loading-overlay').classList.remove('hidden');
+    });
+</script>
+
 {% endblock %}

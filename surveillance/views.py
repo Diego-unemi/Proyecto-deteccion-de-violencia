@@ -1,31 +1,35 @@
-import pandas as pd
-import plotly.express as px
-from .models import IncidentReport
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from .forms import ContactForm
-from .services.deteccion_servicio import generar_frames
-from .models import Incident
-from django.contrib.auth.decorators import permission_required, login_required
-from django.conf import settings
-from django.contrib.auth import login, authenticate, logout
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
-from django.contrib import messages
+import os
+from collections import deque
+from datetime import datetime
+import threading
+
 import cv2
 import numpy as np
+import pandas as pd
 import tensorflow as tf
-from collections import deque
-from django.http import StreamingHttpResponse
-from django.views.decorators import gzip
-from django.shortcuts import get_object_or_404
-import threading
-from datetime import datetime
-from django.core.mail import EmailMessage
+import plotly.express as px
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
-from .forms import VideoUploadForm
-from collections import deque
-import os
+from django.core.mail import send_mail, EmailMessage
+from django.core.paginator import Paginator
+from django.http import StreamingHttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators import gzip
+
+from .forms import (
+    ContactForm,
+    CustomUserCreationForm,
+    CustomAuthenticationForm,
+    VideoUploadForm,
+)
+from .models import Incident
+from .services.deteccion_servicio import generar_frames
+import mimetypes
 
 
 @login_required
@@ -168,6 +172,62 @@ def generar_frames(request):
     cap.release()
     cv2.destroyAllWindows()
 
+
+def importar_video(request):
+    if request.method == 'POST':
+        form = VideoUploadForm(request.POST, request.FILES)
+
+        # Validación del formulario y del archivo subido
+        if form.is_valid():
+            file = form.cleaned_data['video_file']
+            video_name = form.cleaned_data.get('video_name', 'Video sin nombre')
+            video_description = form.cleaned_data.get('video_description', '')
+
+            # Verificar si el archivo subido es de tipo video
+            mime_type, _ = mimetypes.guess_type(file.name)
+            if not mime_type or not mime_type.startswith('video'):
+                messages.error(request, "El archivo seleccionado no es un video. Por favor, suba un archivo de video válido.")
+                return redirect('importar_video')
+
+            # Guardar el archivo en el servidor
+            fs = FileSystemStorage()
+            filename = fs.save(file.name, file)
+            video_path = fs.url(filename)
+
+            # Procesa el video (llama a la función de análisis)
+            resultado, detalles = procesar_video(fs.path(filename))
+
+            # Guarda el incidente en la base de datos
+            Incident.objects.create(
+                incident_type='VIOLENCE' if detalles['nivel_violencia'] >= 0.9 else 'NON_VIOLENCE',
+                location=video_name,
+                description=f"Confianza: {detalles['confianza']:.2f} - {video_description}",
+                source='UPLOAD'
+            )
+
+            # Mensajes de éxito o advertencia
+            if resultado == "Violento":
+                messages.warning(request, "El video contiene contenido violento.")
+            else:
+                messages.success(request, "El video fue analizado exitosamente y no contiene contenido violento.")
+
+            # Renderiza los resultados del análisis
+            return render(request, 'modulos/deteccion_tiemporeal_o_Importacion/video_importado.html', {
+                'resultado': resultado,
+                'detalles': detalles,
+                'video_path': video_path,
+                'video_name': video_name,
+                'video_description': video_description,
+                'form': form
+            })
+        else:
+            messages.error(request, "Hubo un error en el formulario. Verifique los datos e intente nuevamente.")
+    else:
+        form = VideoUploadForm()
+
+    return render(request, 'nombre_de_tu_template.html', {'form': form})
+
+
 @login_required
 def analizar_video_importado(request):
     resultado = None
@@ -270,15 +330,30 @@ def stop_feed(request):
     return redirect('camera_view')
 
 
-
 @login_required
 def incident_list(request):
+    # Obtener incidentes por cada fuente y ordenarlos por fecha
     incidents_realtime = Incident.objects.filter(source='REAL_TIME').order_by('-timestamp')
     incidents_upload = Incident.objects.filter(source='UPLOAD').order_by('-timestamp')
+    
+    # Crear paginadores para cada tipo de incidente con 5 elementos por página
+    realtime_paginator = Paginator(incidents_realtime, 5)
+    upload_paginator = Paginator(incidents_upload, 5)
+    
+    # Obtener el número de página de los parámetros de la URL
+    realtime_page_number = request.GET.get('realtime_page', 1)
+    upload_page_number = request.GET.get('upload_page', 1)
+    
+    # Obtener la página específica del paginador
+    incidents_realtime_page = realtime_paginator.get_page(realtime_page_number)
+    incidents_upload_page = upload_paginator.get_page(upload_page_number)
+
+    # Pasar las páginas a la plantilla
     return render(request, 'modulos/incident_list.html', {
-        'incidents_realtime': incidents_realtime,
-        'incidents_upload': incidents_upload
+        'incidents_realtime': incidents_realtime_page,
+        'incidents_upload': incidents_upload_page,
     })
+
 
 @permission_required('surveillance.delete_incident')
 def delete_incident(request, id):
@@ -287,15 +362,6 @@ def delete_incident(request, id):
         incident.delete()
         return redirect('incident_list')
     
-@permission_required('surveillance.view_incidentreport')   
-def report_dashboard(request):
-    reports = IncidentReport.objects.all()
-    df = pd.DataFrame(list(reports.values('detected_time', 'severity')))
-    fig = px.histogram(df, x='detected_time', color='severity')
-    chart = fig.to_html()
-
-    return render(request, 'report_dashboard.html', {'chart': chart})
-
 
 def register_view(request):
     if request.method == 'POST':
@@ -330,3 +396,37 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from .models import Incident  # Ajusta según corresponda
+
+def incident_search_ajax(request):
+    # Obtener parámetros de búsqueda
+    incident_type = request.GET.get('incident_type', '')
+    date = request.GET.get('date', '')
+
+    # Filtrar incidentes en tiempo real
+    incidents_realtime = Incident.objects.filter(source='REAL_TIME')
+    if incident_type:
+        incidents_realtime = incidents_realtime.filter(incident_type=incident_type)
+    if date:
+        incidents_realtime = incidents_realtime.filter(timestamp__date=date)
+
+    # Filtrar incidentes subidos
+    incidents_upload = Incident.objects.filter(source='UPLOAD')
+    if incident_type:
+        incidents_upload = incidents_upload.filter(incident_type=incident_type)
+    if date:
+        incidents_upload = incidents_upload.filter(timestamp__date=date)
+
+    # Renderizar tablas en HTML
+    realtime_table_html = render_to_string('partials/realtime_table.html', {'incidents_realtime': incidents_realtime})
+    upload_table_html = render_to_string('partials/upload_table.html', {'incidents_upload': incidents_upload})
+
+    # Devolver JSON con HTML renderizado para actualizar las tablas en la página
+    return JsonResponse({
+        'realtime_table': realtime_table_html,
+        'upload_table': upload_table_html,
+    })
+

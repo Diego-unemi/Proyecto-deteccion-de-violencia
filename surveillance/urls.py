@@ -20,5 +20,6 @@ urlpatterns = [
     path('module/', views.module_select, name='module'),
     path('video_upload/', views.video_upload, name='video_upload'),
     path('importar_video/', views.analizar_video_importado, name='importar_video'),
+    path('incident-search-ajax/', views.incident_search_ajax, name='incident_search_ajax'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
