@@ -1,13 +1,27 @@
-
 {% extends 'base.html' %}
 
 {% block title %}Contacto - ViolenciaDetector{% endblock %}
 
 {% block content %}
-  <h2>Contacto</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Enviar</button>
-  </form>
+  <div class="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Ponte en contacto con nosotros</h2>
+    <p class="mb-4 text-gray-600">Hola, {{ request.user.username }}.
+
+      Nos alegra que estés usando nuestra aplicación web para la detección de violencia en tiempo real y mediante importación de videos, desarrollada en colaboración con nuestro grupo universitario. Nos gustaría conocer tus comentarios, sugerencias o cualquier solicitud que tengas sobre la aplicación. Estaremos encantados de atenderte y mejorar la experiencia según tus necesidades.
+      </p>
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg shadow-md transition duration-300">
+        Enviar
+      </button>
+    </form>
+    {% if messages %}
+      <div class="mt-4">
+        {% for message in messages %}
+          <p class="text-green-500">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

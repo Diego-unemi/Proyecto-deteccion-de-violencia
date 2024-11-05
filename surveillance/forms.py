@@ -3,9 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser
 
 class ContactForm(forms.Form):
-    name = forms.CharField(max_length=100, label='Nombre')
-    email = forms.EmailField(label='Correo Electrónico')
-    message = forms.CharField(widget=forms.Textarea, label='Mensaje')
+    message = forms.CharField(widget=forms.Textarea, label='Escribe tu petición')
 
 # Definición única de VideoUploadForm
 class VideoUploadForm(forms.Form):

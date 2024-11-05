@@ -61,22 +61,28 @@ def contact_view(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
             message = form.cleaned_data['message']
+            user_email = request.user.email
+            user_name = request.user.get_full_name() or request.user.username
 
+            # Construir el cuerpo del correo
+            email_message = f"Petición de contacto de: {user_name} ({user_email})\n\n{message}"
+
+            # Enviar correo
             send_mail(
-                f'Mensaje de {name}',
-                message,
-                email,
+                "Solicitud de Contacto",
+                email_message,
+                settings.DEFAULT_FROM_EMAIL,
                 [settings.DEFAULT_FROM_EMAIL],
                 fail_silently=False,
             )
+
+            messages.success(request, "Tu solicitud ha sido enviada con éxito. Nos pondremos en contacto contigo pronto.")
             return redirect('home')
     else:
         form = ContactForm()
 
-    return render(request, 'contact.html', {'form': form})
+    return render(request, 'about.html', {'form': form})
 
 
 

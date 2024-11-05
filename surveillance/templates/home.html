@@ -1,6 +1,6 @@
 {% extends 'base.html' %} 
 {% load static %} 
-{% block title %}Sistema de Detección de Violencia - SecureVision{% endblock %} 
+{% block title %}Sistema de Detección de Violencia - WatchSafe{% endblock %} 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
   <!-- Hero Section -->
@@ -26,7 +26,7 @@
             class="text-5xl font-bold mb-4 text-gray-800 opacity-0 transform translate-y-10"
             id="main-title"
           >
-            SecureVision
+            WatchSafe
           </h1>
           <h2
             class="text-2xl font-semibold mb-4 text-red-600 opacity-0 transform translate-y-10"
@@ -47,7 +47,7 @@
             id="cta-buttons"
           >
             <a
-              href="#demo"
+              href="{% url 'video_feed' %}"
               class="bg-red-500 text-white font-bold py-3 px-8 rounded-full hover:bg-red-600 transition duration-300 inline-flex items-center group"
             >
               <span>Ver Demo</span>
