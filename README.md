@@ -1,6 +1,6 @@
 # Detección de Violencia con Django y AWS
 ## Descripción del Proyecto
-Este proyecto tiene como objetivo desarrollar un sistema de detección de violencia en tiempo real utilizando tecnologías de visión por computadora. La aplicación, construida con Django para el backend y desplegada en AWS, emplea cámaras para analizar transmisiones de video en vivo y detectar incidentes violentos. El sistema es capaz de identificar comportamientos violentos utilizando modelos de aprendizaje automático entrenados en datasets relevantes, proporcionando alertas en tiempo real a través de una interfaz web accesible para los usuarios.
+Este proyecto tiene como objetivo desarrollar un sistema de detección de violencia en tiempo real utilizando tecnologías de visión por computadora. La aplicación, construida con Django para el backend y desplegada en AWS, emplea la webcam para analizar transmisiones de video en vivo y detectar incidentes violentos. El sistema es capaz de identificar comportamientos violentos utilizando modelos de aprendizaje automático entrenados previamente con un dataset o conjuntos de datos proporcionando alertas en tiempo real a través de una interfaz web accesible para los usuarios.
 
 Este proyecto está diseñado para ser escalable y eficiente, con el potencial de ser utilizado en escenarios de vigilancia, seguridad pública y protección de instalaciones sensibles.
 ## Características
@@ -17,18 +17,18 @@ Optimización y Escalabilidad: El sistema está optimizado para manejar un alto 
 
 - Frontend: HTML, CSS, JavaScript (integrado con Django)
 
-- Visión por Computadora: OpenCV u otras bibliotecas de detección de violencia
+- Visión por Computadora: OpenCV, tensorflow, keras y otras librerias mas
 
-- Despliegue: AWS EC2, AWS S3, AWS RDS
+- Despliegue: AWS RDS
 
 - Control de Versiones: Git, GitHub
 
 
 ## Requisitos Previos
 
-- Python 3.x
+- Python entre python 3.10 a 3.11
 
-- Django 3.x o superior
+- Django 5 o superior
 
 - AWS CLI configurado
 
