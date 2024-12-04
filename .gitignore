@@ -33,7 +33,6 @@ share/python-wheels/
 MANIFEST
 
 #Eviroments
-.env
 .venv
 env/
 venv/
